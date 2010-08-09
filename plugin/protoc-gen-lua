@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- encoding:utf8 -*-
 # protoc-gen-erl
-# Google's Protocol Buffers project, ported to Erlang.
-# https://code.google.com/p/protoc-gen-erl/
+# Google's Protocol Buffers project, ported to lua.
+# https://code.google.com/p/protoc-gen-lua/
 #
 # Copyright (c) 2010 , 林卓毅 (Zhuoyi Lin) netsnail@gmail.com
 # All rights reserved.

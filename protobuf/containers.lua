@@ -1,17 +1,18 @@
 --
 --------------------------------------------------------------------------------
---         FILE:  containers.lua
---        USAGE:  ./containers.lua 
---  DESCRIPTION:  
---      OPTIONS:  ---
--- REQUIREMENTS:  ---
---         BUGS:  ---
---        NOTES:  ---
---       AUTHOR:  Sean Lin (NetSnail), <netsnail@gmail.com>
---      COMPANY:  NetEase
---      VERSION:  1.0
---      CREATED:  2010年08月02日 16时15分42秒 CST
---     REVISION:  ---
+--  FILE:  containers.lua
+--  DESCRIPTION:  protoc-gen-lua
+--      Google's Protocol Buffers project, ported to lua.
+--      https://code.google.com/p/protoc-gen-lua/
+--
+--      Copyright (c) 2010 , 林卓毅 (Zhuoyi Lin) netsnail@gmail.com
+--      All rights reserved.
+--
+--      Use, modification and distribution are subject to the "New BSD License"
+--      as listed at <url: http://www.opensource.org/licenses/bsd-license.php >.
+--
+--  COMPANY:  NetEase
+--  CREATED:  2010年08月02日 16时15分42秒 CST
 --------------------------------------------------------------------------------
 --
 local setmetatable = setmetatable
@@ -70,8 +71,5 @@ function RepeatedScalarFieldContainer(listener, type_checker)
     o._type_checker = type_checker
     return setmetatable(o, _RSFC_meta)
 end
-
-
-
 
 
