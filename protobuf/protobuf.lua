@@ -668,19 +668,11 @@ local function _AddSerializePartialToStringMethod(message_descriptor, message_me
 end
 
 local function _AddMergeFromStringMethod(message_descriptor, message_meta)
-    message_meta._member.MergeFromString = function(self, serialized)
-        local length = #serialized
-        if message_meta._member._InternalParse(self, serialized, 0, length) ~= length then
-            error('Unexpected end-group tag.')
-        end
-        return length 
-    end
-
     local ReadTag = decoder.ReadTag
     local SkipField = decoder.SkipField
     local decoders_by_tag = message_meta._decoders_by_tag
 
-    message_meta._member._InternalParse = function(self, buffer, pos, pend)
+    local _internal_parse = function(self, buffer, pos, pend)
         message_meta._member._Modified(self)
         local field_dict = self._fields
         local tag_bytes, new_pos 
@@ -699,6 +691,21 @@ local function _AddMergeFromStringMethod(message_descriptor, message_meta)
             end
         end
         return pos
+    end
+    message_meta._member._InternalParse = _internal_parse 
+
+    local merge_from_string = function(self, serialized)
+        local length = #serialized
+        if _internal_parse(self, serialized, 0, length) ~= length then
+            error('Unexpected end-group tag.')
+        end
+        return length 
+    end
+    message_meta._member.MergeFromString = merge_from_string
+
+    message_meta._member.ParseFromString = function(self, serialized)
+        message_meta._member.Clear(self)
+        merge_from_string(self, serialized)
     end
 end
 

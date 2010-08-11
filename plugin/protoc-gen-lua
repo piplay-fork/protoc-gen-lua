@@ -221,6 +221,26 @@ class Writer(object):
             self.io.write(self.__prefix)
         self.io.write(data)
 
+DEFAULT_VALUE = {
+    FDP.TYPE_DOUBLE         : '0.0',
+    FDP.TYPE_FLOAT          : '0.0',
+    FDP.TYPE_INT64          : '0',
+    FDP.TYPE_UINT64         : '0',
+    FDP.TYPE_INT32          : '0',
+    FDP.TYPE_FIXED64        : '0',
+    FDP.TYPE_FIXED32        : '0',
+    FDP.TYPE_BOOL           : 'false',
+    FDP.TYPE_STRING         : '""',
+    FDP.TYPE_MESSAGE        : 'nil',
+    FDP.TYPE_BYTES          : '""',
+    FDP.TYPE_UINT32         : '0',
+    FDP.TYPE_ENUM           : '1',
+    FDP.TYPE_SFIXED32       : '0',
+    FDP.TYPE_SFIXED64       : '0',
+    FDP.TYPE_SINT32         : '0',
+    FDP.TYPE_SINT64         : '0',
+}
+
 def code_gen_enum_item(index, enum_value, env):
     full_name = env.get_local_name() + '.' + enum_value.name
     obj_name = full_name.upper().replace('.', '_') + '_ENUM'
@@ -282,7 +302,13 @@ def code_gen_field(index, field_desc, env):
             context('.default_value = %s\n'%value)
     else:
         context('.has_default_value = false\n')
-        context('.default_value = nil\n')
+        if field_desc.HasField('type_name'):
+            if field_desc.type == FDP.TYPE_ENUM:
+                pass
+            else:
+                context('.default_value = nil\n')
+        else:
+            context('.default_value = %s\n'%DEFAULT_VALUE[field_desc.type])
 
     if field_desc.HasField('type_name'):
         type_name = env.get_ref_name(field_desc.type_name).upper().replace('.', '_')
@@ -363,9 +389,6 @@ def code_gen_file(proto_file, env, is_gen):
         inc_file = path.splitext(f)[0]
         includes.append(inc_file)
 
-    for msg_desc in proto_file.message_type:
-        code_gen_message(msg_desc, env)
-
 #    for field_desc in proto_file.extension:
 #        code_gen_extensions(field_desc, field_desc.name, env)
 
@@ -374,6 +397,9 @@ def code_gen_file(proto_file, env, is_gen):
         for enum_value in enum_desc.value:
             env.message.append('%s = %d\n' % (enum_value.name,
                                               enum_value.number))
+
+    for msg_desc in proto_file.message_type:
+        code_gen_message(msg_desc, env)
 
     if is_gen:
         lua = Writer()
