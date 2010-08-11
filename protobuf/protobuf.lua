@@ -34,6 +34,7 @@ local listener_mod = require "listener"
 local containers = require "containers"
 local descriptor = require "descriptor"
 local FieldDescriptor = descriptor.FieldDescriptor
+local text_format = require "text_format"
 
 module("protobuf")
 
@@ -558,6 +559,13 @@ local function _AddClearMethod(message_descriptor, message_meta)
     end
 end
 
+local function _AddStrMethod(message_meta)
+    local format = text_format.msg_format
+    message_meta.__tostring = function(self)
+        return format(self)    
+    end
+end
+
 local function _AddHasExtensionMethod(message_meta)
     message_meta._member.HasExtension = function(self, extension_handle)
         if extension_handle.label == FieldDescriptor.LABEL_REPEATED then
@@ -780,7 +788,7 @@ local function _AddMessageMethods(message_descriptor, message_meta)
     end
     _AddClearMethod(message_descriptor, message_meta)
 --    _AddEqualsMethod(message_descriptor, message_meta)
---    _AddStrMethod(message_descriptor, message_meta)
+    _AddStrMethod(message_meta)
     _AddSetListenerMethod(message_meta)
     _AddByteSizeMethod(message_descriptor, message_meta)
     _AddSerializeToStringMethod(message_descriptor, message_meta)
