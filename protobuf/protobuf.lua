@@ -25,7 +25,9 @@ local pairs = pairs
 local print = print
 local table = table 
 local string = string
+local tostring = tostring
 
+local pb = require "pb"
 local wire_format = require "wire_format"
 local type_checkers = require "type_checkers"
 local encoder = require "encoder"
@@ -328,7 +330,7 @@ local function _InitMethod(message_meta)
         self._fields = {}
         self._is_present_in_parent = false
         self._listener = listener_mod.NullMessageListener()
-        self._listener_for_children = listener_mod.Listener(self) -- TODO
+        self._listener_for_children = listener_mod.Listener(self) 
 --        self._name = message_meta._name
         return setmetatable(self, message_meta)
     end
@@ -595,7 +597,7 @@ local function _AddByteSizeMethod(message_descriptor, message_meta)
         if not self._cached_byte_size_dirty then
             return self._cached_byte_size
         end
-        size = 0
+        local size = 0
         for field_descriptor, field_value in message_meta._member.ListFields(self) do
             size = field_descriptor._sizer(field_value) + size
         end
@@ -614,23 +616,44 @@ local function _AddSerializeToStringMethod(message_descriptor, message_meta)
         end
         return message_meta._member.SerializePartialToString(self)
     end
+    message_meta._member.SerializeToIOString = function(self, iostring)
+        if not message_meta._member.IsInitialized(self) then
+            error('Message is missing required fields: ' .. 
+                table.concat(message_meta._member.FindInitializationErrors(self), ','))
+        end
+        return message_meta._member.SerializePartialToIOString(self, iostring)
+    end
 end
 
 local function _AddSerializePartialToStringMethod(message_descriptor, message_meta)
     local concat = table.concat
-    message_meta._member.SerializePartialToString = function(self)
-        out = {}
-        message_meta._member._InternalSerialize(self, function(value)
-            out[#out + 1] = value
-        end)
-        return concat(out) 
-    end
-
-    message_meta._member._InternalSerialize = function(self, write_bytes)
+    local _internal_serialize = function(self, write_bytes)
         for field_descriptor, field_value in message_meta._member.ListFields(self) do
             field_descriptor._encoder(write_bytes, field_value)
         end
     end
+
+    local _serialize_partial_to_iostring = function(self, iostring)
+        local w = iostring.write
+        local write = function(value)
+            w(iostring, value) 
+        end
+        _internal_serialize(self, write)
+        return 
+    end
+
+    local _serialize_partial_to_string = function(self)
+        local out = {}
+        local write = function(value)
+            out[#out + 1] = value
+        end
+        _internal_serialize(self, write)
+        return concat(out)
+    end
+
+    message_meta._member._InternalSerialize = _internal_serialize
+    message_meta._member.SerializePartialToIOString = _serialize_partial_to_iostring
+    message_meta._member.SerializePartialToString = _serialize_partial_to_string
 end
 
 local function _AddMergeFromStringMethod(message_descriptor, message_meta)

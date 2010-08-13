@@ -20,6 +20,7 @@
  * =====================================================================================
  */
 #include <stdint.h>
+#include <string.h>
 
 #include <lua.h>
 #include <lualib.h>
@@ -29,6 +30,18 @@
 #if __BYTE_ORDER == __LITTLE_ENDIAN
 #define IS_LITTLE_ENDIAN
 #endif
+
+#define IOSTRING_META "protobuf.IOString"
+
+#define checkiostring(L) \
+    (IOString*) luaL_checkudata(L, 1, IOSTRING_META)
+
+#define IOSTRING_BUF_LEN 65535
+
+typedef struct{
+    size_t size;
+    char buf[IOSTRING_BUF_LEN];
+} IOString;
 
 static void pack_varint(luaL_Buffer *b, uint64_t value)
 {
@@ -324,6 +337,64 @@ static int struct_unpack(lua_State *L)
     return 1;
 }
 
+static int iostring_new(lua_State* L)
+{
+    IOString* io = (IOString*)lua_newuserdata(L, sizeof(IOString));
+    io->size = 0;
+
+    luaL_getmetatable(L, IOSTRING_META);
+    lua_setmetatable(L, -2); 
+    return 1;
+}
+
+static int iostring_str(lua_State* L)
+{
+    IOString *io = checkiostring(L);
+    lua_pushlstring(L, io->buf, io->size);
+    return 1;
+}
+
+static int iostring_len(lua_State* L)
+{
+    IOString *io = checkiostring(L);
+    lua_pushinteger(L, io->size);
+    return 1;
+}
+
+static int iostring_write(lua_State* L)
+{
+    IOString *io = checkiostring(L);
+    size_t size;
+    const char* str = luaL_checklstring(L, 2, &size);
+    if(io->size + size > IOSTRING_BUF_LEN){
+        luaL_error(L, "Out of range");
+    }
+    memcpy(io->buf + io->size, str, size);
+    io->size += size;
+    return 0;
+}
+
+static int iostring_sub(lua_State* L)
+{
+    IOString *io = checkiostring(L);
+    size_t begin = luaL_checkinteger(L, 2);
+    size_t end = luaL_checkinteger(L, 3);
+
+    if(begin > end || end > io->size)
+    {
+        luaL_error(L, "Out of range");
+    }
+    lua_pushlstring(L, io->buf + begin - 1, end - begin + 1);
+    return 1;
+}
+
+static int iostring_clear(lua_State* L)
+{
+    IOString *io = checkiostring(L);
+    io->size = 0; 
+    return 0;
+}
+
 static const struct luaL_reg _pb [] = {
     {"varint_encoder", varint_encoder},
     {"signed_varint_encoder", signed_varint_encoder},
@@ -332,12 +403,26 @@ static const struct luaL_reg _pb [] = {
     {"struct_unpack", struct_unpack},
     {"varint_decoder", varint_decoder},
     {"signed_varint_decoder", signed_varint_decoder},
+    {"new_iostring", iostring_new},
     {NULL, NULL}
 };
 
+static const struct luaL_reg _c_iostring_m [] = {
+    {"__tostring", iostring_str},
+    {"__len", iostring_len},
+    {"write", iostring_write},
+    {"sub", iostring_sub},
+    {"clear", iostring_clear},
+    {NULL, NULL}
+};
 
 int luaopen_pb (lua_State *L)
 {
+    luaL_newmetatable(L, IOSTRING_META);
+    lua_pushvalue(L, -1);
+    lua_setfield(L, -2, "__index");
+    luaL_register(L, NULL, _c_iostring_m);
+
     luaL_register(L, "pb", _pb);
     return 1;
-}
+} 

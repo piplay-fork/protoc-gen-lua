@@ -19,6 +19,8 @@ local string = string
 local table = table
 local ipairs = ipairs
 local assert =assert
+local tostring = tostring
+local print = print
 
 local pb = require "pb"
 local wire_format = require "wire_format"
@@ -195,14 +197,14 @@ function MessageSizer(field_number, is_repeated, is_packed)
         return function(value)
             local result = tag_size * #value
             for element in value do
-                local l = element.ByteSize()
+                local l = element:ByteSize()
                 result = result + VarintSize(l) + l
             end
             return result
         end
     else
         return function (value)
-            local l = value.ByteSize()
+            local l = value:ByteSize()
             return tag_size + VarintSize(l) + l
         end
     end
@@ -217,12 +219,12 @@ local _EncodeSignedVarint = pb.signed_varint_encoder
 
 
 function _VarintBytes(value)
-    local buff = {}
+    local out = {}
     local write = function(value)
-        buff[#buff + 1] = value 
+        out[#out + 1 ] = value
     end
     _EncodeSignedVarint(write, value)
-    return table.concat(buff)
+    return table.concat(out)
 end
 
 function TagBytes(field_number, wire_type)
