@@ -331,7 +331,6 @@ local function _InitMethod(message_meta)
         self._is_present_in_parent = false
         self._listener = listener_mod.NullMessageListener()
         self._listener_for_children = listener_mod.Listener(self) 
---        self._name = message_meta._name
         return setmetatable(self, message_meta)
     end
 end
@@ -500,14 +499,21 @@ end
 
 local function _AddListFieldsMethod(message_descriptor, message_meta)
     message_meta._member.ListFields = function (self)
-        local all_fields = {}
-        for descriptor, value in pairs(self._fields) do
-            if _IsPresent(descriptor, value) then
-                all_fields[descriptor] = value            
+        local list_field = function(fields)
+            local f, s, v = pairs(self._fields)
+            local iter = function(a, i)
+                while true do
+                    local descriptor, value = f(a, i)
+                    if descriptor == nil then
+                        return 
+                    elseif _IsPresent(descriptor, value) then
+                        return descriptor, value
+                    end
+                end
             end
+            return iter, s, v
         end
---        all_fields = table.sort(all_fields, function(a, b) return a[2].number < b[2].number end)
-        return pairs(all_fields)
+        return list_field(self._fields)
     end
 end
 
@@ -888,10 +894,11 @@ local function Message(descriptor)
     message_meta._member = {}
 --    message_meta._name = descriptor.full_name
 
+    ns = setmetatable({}, message_meta._member)
     message_meta._member.__call = _InitMethod(message_meta)
     message_meta._member.__index = message_meta._member 
+    message_meta._member.type = ns
 
-    ns = setmetatable({}, message_meta._member)
     if rawget(descriptor, "_concrete_class") == nil then
         rawset(descriptor, "_concrete_class", ns)
         for k, field in ipairs(descriptor.fields) do  

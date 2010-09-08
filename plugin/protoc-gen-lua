@@ -23,6 +23,11 @@ _message = {}
 
 FDP = plugin_pb2.descriptor_pb2.FieldDescriptorProto
 
+if sys.platform == "win32":
+    import msvcrt, os
+    msvcrt.setmode(sys.stdin.fileno(), os.O_BINARY)
+    msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
+
 class CppType:
     CPPTYPE_INT32       = 1
     CPPTYPE_INT64       = 2
@@ -438,7 +443,7 @@ def main():
         file_desc.name = k
         file_desc.content = _files[k]
 
-    sys.stdout.write(code_generated.SerializePartialToString())
+    sys.stdout.write(code_generated.SerializeToString())
 
 if __name__ == "__main__":
     main()
