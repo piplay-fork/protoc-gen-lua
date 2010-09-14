@@ -26,6 +26,7 @@ local print = print
 local table = table 
 local string = string
 local tostring = tostring
+local type = type
 
 local pb = require "pb"
 local wire_format = require "wire_format"
@@ -266,7 +267,7 @@ end
 
 local function _DefaultValueConstructorForField(field)
     if field.label == FieldDescriptor.LABEL_REPEATED then
-        if field.default_value ~= {} then
+        if type(field.default_value) ~= 'table' or #field.default_value ~= 0 then
             error('Repeated field default value not empty list:' .. field.default_value)
         end
         if field.cpp_type == FieldDescriptor.CPPTYPE_MESSAGE then
@@ -302,15 +303,14 @@ local function _AttachFieldHelpers(message_meta, field_descriptor)
     rawset(field_descriptor, "_sizer", TYPE_TO_SIZER[field_descriptor.type](field_descriptor.number, is_repeated, is_packed))
     rawset(field_descriptor, "_default_constructor", _DefaultValueConstructorForField(field_descriptor))
 
-    local AddDecoder = function(wiretype, is_repeated)
+    local AddDecoder = function(wiretype, is_packed)
         local tag_bytes = encoder.TagBytes(field_descriptor.number, wiretype)
         message_meta._decoders_by_tag[tag_bytes] = TYPE_TO_DECODER[field_descriptor.type](field_descriptor.number, is_repeated, is_packed, field_descriptor, field_descriptor._default_constructor)
     end
   
+    AddDecoder(FIELD_TYPE_TO_WIRE_TYPE[field_descriptor.type], False)
     if is_repeated and IsTypePackable(field_descriptor.type) then
         AddDecoder(wire_format.WIRETYPE_LENGTH_DELIMITED, True)
-    else
-        AddDecoder(FIELD_TYPE_TO_WIRE_TYPE[field_descriptor.type], False)
     end
 end
 
@@ -336,11 +336,10 @@ local function _InitMethod(message_meta)
 end
 
 local function _AddPropertiesForRepeatedField(field, message_meta)
-    proto_field_name = field.name
-    property_name = _PropertyName(proto_field_name)
+    local property_name = field.name
 
     message_meta._getter[property_name] = function(self)
-        field_value = self._fields.get(field)
+        local field_value = self._fields[field]
         if field_value == nil then
             field_value = field._default_constructor(self)
 

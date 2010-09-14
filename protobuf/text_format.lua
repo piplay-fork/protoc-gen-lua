@@ -19,6 +19,8 @@ local math = math
 local print = print
 local getmetatable = getmetatable
 local table = table
+local ipairs = ipairs
+
 local descriptor = require "descriptor"
 
 module "text_format"

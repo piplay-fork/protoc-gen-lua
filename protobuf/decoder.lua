@@ -74,7 +74,7 @@ local function _SimpleDecoder(wire_type, decode_value)
                 end
                 while 1 do
                     local element, new_pos = decode_value(buffer, pos)
-                    value[#value + 1] = element
+                    value:append(element)
                     pos = new_pos + tag_len
                     if sub(buffer, new_pos+1, pos) ~= tag_bytes or new_pos >= pend then
                         if new_pos > pend then
@@ -163,7 +163,7 @@ function StringDecoder(field_number, is_repeated, is_packed, key, new_default)
                 if new_pos > pend then
                     error('Truncated string.')
                 end
-                value[#value + 1] = sub(buffer, pos+1, new_pos)
+                value:append(sub(buffer, pos+1, new_pos))
                 pos = new_pos + tag_len
                 if sub(buffer, new_pos + 1, pos) ~= tag_bytes or new_pos == pend then
                     return new_pos
@@ -204,7 +204,7 @@ function BytesDecoder(field_number, is_repeated, is_packed, key, new_default)
                 if new_pos > pend then
                     error('Truncated string.')
                 end
-                value[#value + 1] = sub(buffer, pos + 1, new_pos)
+                value:append(sub(buffer, pos + 1, new_pos))
                 pos = new_pos + tag_len
                 if sub(buffer, new_pos + 1, pos) ~= tag_bytes or new_pos == pend then
                     return new_pos

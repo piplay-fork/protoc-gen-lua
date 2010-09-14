@@ -38,6 +38,7 @@ local _listener_meta = {
         end
     end
 }
+_listener_meta.__index = _listener_meta
 
 function Listener(parent_message)
     local o = {}

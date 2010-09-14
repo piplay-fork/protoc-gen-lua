@@ -17,6 +17,9 @@
 --
 local setmetatable = setmetatable
 local table = table
+local rawset = rawset
+local error = error
+
 module "containers"
 
 local _RCFC_meta = {
