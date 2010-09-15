@@ -307,16 +307,13 @@ def code_gen_field(index, field_desc, env):
             context('.default_value = %s\n'%value)
     else:
         context('.has_default_value = false\n')
-        if field_desc.HasField('type_name'):
-            if field_desc.type == FDP.TYPE_ENUM:
-                pass
-            else:
-                context('.default_value = nil\n')
+        if field_desc.label == FDP.LABEL_REPEATED:
+            default_value = "{}"
+        elif field_desc.HasField('type_name'):
+            default_value = "nil"
         else:
-            if field_desc.label == FDP.LABEL_REPEATED:
-                context('.default_value = {}\n')
-            else:
-                context('.default_value = %s\n'%DEFAULT_VALUE[field_desc.type])
+            default_value = DEFAULT_VALUE[field_desc.type]
+        context('.default_value = %s\n' % default_value)
 
     if field_desc.HasField('type_name'):
         type_name = env.get_ref_name(field_desc.type_name).upper().replace('.', '_')

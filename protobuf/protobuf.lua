@@ -267,8 +267,8 @@ end
 
 local function _DefaultValueConstructorForField(field)
     if field.label == FieldDescriptor.LABEL_REPEATED then
-        if type(field.default_value) ~= 'table' or #field.default_value ~= 0 then
-            error('Repeated field default value not empty list:' .. field.default_value)
+        if type(field.default_value) ~= "table" or #(field.default_value) ~= 0  then
+            error('Repeated field default value not empty list:' .. tostring(field.default_value))
         end
         if field.cpp_type == FieldDescriptor.CPPTYPE_MESSAGE then
             local message_type = field.message_type
