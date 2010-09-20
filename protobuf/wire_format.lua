@@ -45,8 +45,10 @@ function UnpackTag(tag)
     return (tag - wire_type) / 8, wire_type
 end
 
-ZigZagEncode = pb._zig_zag_encode
-ZigZagDecode = pb._zig_zag_decode
+ZigZagEncode32 = pb.zig_zag_encode32
+ZigZagDecode32 = pb.zig_zag_decode32
+ZigZagEncode64 = pb.zig_zag_encode64
+ZigZagDecode64 = pb.zig_zag_decode64
 
 function Int32ByteSize(field_number, int32)
   return Int64ByteSize(field_number, int32)

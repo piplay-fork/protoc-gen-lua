@@ -340,9 +340,11 @@ UInt64Encoder = UInt32Encoder
 
 SInt32Encoder = _ModifiedEncoder(
     wire_format.WIRETYPE_VARINT, _EncodeVarint, _VarintSize,
-    wire_format.ZigZagEncode)
+    wire_format.ZigZagEncode32)
 
-SInt64Encoder = SInt32Encoder
+SInt64Encoder = _ModifiedEncoder(
+    wire_format.WIRETYPE_VARINT, _EncodeVarint, _VarintSize,
+    wire_format.ZigZagEncode64)
 
 Fixed32Encoder  = _StructPackEncoder(wire_format.WIRETYPE_FIXED32, 32, string.byte('I'))
 Fixed64Encoder  = _StructPackEncoder(wire_format.WIRETYPE_FIXED64, 64, string.byte('Q'))

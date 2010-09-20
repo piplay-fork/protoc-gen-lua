@@ -254,6 +254,38 @@ static int signed_varint_decoder(lua_State *L)
     return 2;
 }
 
+static int zig_zag_encode32(lua_State *L)
+{
+    int32_t n = luaL_checkinteger(L, 1);
+    uint32_t value = (n << 1) ^ (n >> 31);
+    lua_pushinteger(L, value);
+    return 1;
+}
+
+static int zig_zag_decode32(lua_State *L)
+{
+    uint32_t n = (uint32_t)luaL_checkinteger(L, 1);
+    int32_t value = (n >> 1) ^ - (int32_t)(n & 1);
+    lua_pushinteger(L, value);
+    return 1;
+}
+
+static int zig_zag_encode64(lua_State *L)
+{
+    int64_t n = (int64_t)luaL_checknumber(L, 1);
+    uint64_t value = (n << 1) ^ (n >> 63);
+    lua_pushinteger(L, value);
+    return 1;
+}
+
+static int zig_zag_decode64(lua_State *L)
+{
+    uint64_t n = (uint64_t)luaL_checknumber(L, 1);
+    int64_t value = (n >> 1) ^ - (int64_t)(n & 1);
+    lua_pushinteger(L, value);
+    return 1;
+}
+
 static int read_tag(lua_State *L)
 {
     size_t len;
@@ -403,6 +435,10 @@ static const struct luaL_reg _pb [] = {
     {"struct_unpack", struct_unpack},
     {"varint_decoder", varint_decoder},
     {"signed_varint_decoder", signed_varint_decoder},
+    {"zig_zag_decode32", zig_zag_decode32},
+    {"zig_zag_encode32", zig_zag_encode32},
+    {"zig_zag_decode64", zig_zag_decode64},
+    {"zig_zag_encode64", zig_zag_encode64},
     {"new_iostring", iostring_new},
     {NULL, NULL}
 };
