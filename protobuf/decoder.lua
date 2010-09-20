@@ -131,12 +131,12 @@ UInt64Decoder = _SimpleDecoder(wire_format.WIRETYPE_VARINT, _DecodeVarint)
 SInt32Decoder = _ModifiedDecoder(wire_format.WIRETYPE_VARINT, _DecodeVarint32, wire_format.ZigZagDecode32)
 SInt64Decoder = _ModifiedDecoder(wire_format.WIRETYPE_VARINT, _DecodeVarint, wire_format.ZigZagDecode64)
 
-Fixed32Decoder  = _StructPackDecoder(wire_format.WIRETYPE_FIXED32, 32, string.byte('I'))
-Fixed64Decoder  = _StructPackDecoder(wire_format.WIRETYPE_FIXED64, 64, string.byte('Q'))
-SFixed32Decoder = _StructPackDecoder(wire_format.WIRETYPE_FIXED32, 32, string.byte('i'))
-SFixed64Decoder = _StructPackDecoder(wire_format.WIRETYPE_FIXED64, 64, string.byte('q'))
-FloatDecoder    = _StructPackDecoder(wire_format.WIRETYPE_FIXED32, 32, string.byte('f'))
-DoubleDecoder   = _StructPackDecoder(wire_format.WIRETYPE_FIXED64, 64, string.byte('d'))
+Fixed32Decoder  = _StructPackDecoder(wire_format.WIRETYPE_FIXED32, 4, string.byte('I'))
+Fixed64Decoder  = _StructPackDecoder(wire_format.WIRETYPE_FIXED64, 8, string.byte('Q'))
+SFixed32Decoder = _StructPackDecoder(wire_format.WIRETYPE_FIXED32, 4, string.byte('i'))
+SFixed64Decoder = _StructPackDecoder(wire_format.WIRETYPE_FIXED64, 8, string.byte('q'))
+FloatDecoder    = _StructPackDecoder(wire_format.WIRETYPE_FIXED32, 4, string.byte('f'))
+DoubleDecoder   = _StructPackDecoder(wire_format.WIRETYPE_FIXED64, 8, string.byte('d'))
 
 
 BoolDecoder = _ModifiedDecoder(wire_format.WIRETYPE_VARINT, _DecodeVarint, _Boolean)

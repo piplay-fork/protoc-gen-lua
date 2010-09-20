@@ -150,8 +150,9 @@ static int pack_fixed64(lua_State *L, uint8_t* value){
 
 static int struct_pack(lua_State *L)
 {
-    uint8_t format = luaL_checkinteger(L, 1);
-    lua_Number value = luaL_checknumber(L, 2);
+    uint8_t format = luaL_checkinteger(L, 2);
+    lua_Number value = luaL_checknumber(L, 3);
+    lua_settop(L, 1);
 
     switch(format){
         case 'i':
@@ -193,7 +194,8 @@ static int struct_pack(lua_State *L)
         default:
             luaL_error(L, "Unknown, format");
     }
-    return 1;
+    lua_call(L, 1, 0);
+    return 0;
 }
 
 static size_t size_varint(const char* buffer, size_t len)
@@ -355,7 +357,7 @@ static int struct_unpack(lua_State *L)
             }
         case 'I':
             {
-                lua_pushnumber(L, *(lua_Number*)unpack_fixed32(buffer, out));
+                lua_pushnumber(L, *(uint32_t*)unpack_fixed32(buffer, out));
                 break;
             }
         case 'Q':

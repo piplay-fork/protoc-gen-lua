@@ -259,7 +259,7 @@ function _SimpleEncoder(wire_type, encode_value, compute_value_size)
             local tag_bytes = TagBytes(field_number, wire_type)
             return function(write, value)
                 write(tag_bytes)
-                return encode_value(write, value)
+                encode_value(write, value)
             end
         end
     end
@@ -293,7 +293,7 @@ function _ModifiedEncoder(wire_type, encode_value, compute_value_size, modify_va
             local tag_bytes = TagBytes(field_number, wire_type)
             return function (write, value)
                 write(tag_bytes)
-                return encode_value(write, modify_value(value))
+                encode_value(write, modify_value(value))
             end
         end
     end
@@ -309,7 +309,7 @@ function _StructPackEncoder(wire_type, value_size, format)
                 write(tag_bytes)
                 EncodeVarint(write, #value * value_size)
                 for _, element in ipairs(value) do
-                    write(struct_pack(format, element))
+                    struct_pack(write, format, element)
                 end
             end
         elseif is_repeated then
@@ -317,14 +317,14 @@ function _StructPackEncoder(wire_type, value_size, format)
             return function (write, value)
                 for _, element in ipairs(value) do
                     write(tag_bytes)
-                    write(struct_pack(format, element))
+                    struct_pack(write, format, element)
                 end
             end
         else
             local tag_bytes = TagBytes(field_number, wire_type)
             return function (write, value)
                 write(tag_bytes)
-                return write(struct_pack(format, value))
+                struct_pack(write, format, value)
             end
         end
 
@@ -346,12 +346,12 @@ SInt64Encoder = _ModifiedEncoder(
     wire_format.WIRETYPE_VARINT, _EncodeVarint, _VarintSize,
     wire_format.ZigZagEncode64)
 
-Fixed32Encoder  = _StructPackEncoder(wire_format.WIRETYPE_FIXED32, 32, string.byte('I'))
-Fixed64Encoder  = _StructPackEncoder(wire_format.WIRETYPE_FIXED64, 64, string.byte('Q'))
-SFixed32Encoder = _StructPackEncoder(wire_format.WIRETYPE_FIXED32, 32, string.byte('i'))
-SFixed64Encoder = _StructPackEncoder(wire_format.WIRETYPE_FIXED64, 64, string.byte('q'))
-FloatEncoder    = _StructPackEncoder(wire_format.WIRETYPE_FIXED32, 32, string.byte('f'))
-DoubleEncoder   = _StructPackEncoder(wire_format.WIRETYPE_FIXED64, 64, string.byte('d'))
+Fixed32Encoder  = _StructPackEncoder(wire_format.WIRETYPE_FIXED32, 4, string.byte('I'))
+Fixed64Encoder  = _StructPackEncoder(wire_format.WIRETYPE_FIXED64, 8, string.byte('Q'))
+SFixed32Encoder = _StructPackEncoder(wire_format.WIRETYPE_FIXED32, 4, string.byte('i'))
+SFixed64Encoder = _StructPackEncoder(wire_format.WIRETYPE_FIXED64, 8, string.byte('q'))
+FloatEncoder    = _StructPackEncoder(wire_format.WIRETYPE_FIXED32, 4, string.byte('f'))
+DoubleEncoder   = _StructPackEncoder(wire_format.WIRETYPE_FIXED64, 8, string.byte('d'))
 
 
 function BoolEncoder(field_number, is_repeated, is_packed)
