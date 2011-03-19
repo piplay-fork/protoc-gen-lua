@@ -415,7 +415,7 @@ local _ED_meta = {
         if value ~= nil then
             return value
         end
-        if extension_handle.label == FieldDescriptor.CPPTYPE_MESSAGE then
+        if extension_handle.label == FieldDescriptor.LABEL_REPEATED then
             value = extension_handle._default_constructor(self._extended_message)
         elseif extension_handle.cpp_type == FieldDescriptor.CPPTYPE_MESSAGE then
             value = extension_handle.message_type._concrete_class()
