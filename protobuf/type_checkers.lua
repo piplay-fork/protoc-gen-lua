@@ -65,7 +65,7 @@ end
 function UnicodeValueChecker()
     return function (proposed_value)
         if type(proposed_value) ~= 'string' then
-            error('%s has type %s, but expected one of: string', proposed_value, type(proposed_value))
+            error(string.format('%s has type %s, but expected one of: string', proposed_value, type(proposed_value)))
         end
     end
 end
