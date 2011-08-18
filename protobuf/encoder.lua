@@ -19,8 +19,6 @@ local string = string
 local table = table
 local ipairs = ipairs
 local assert =assert
-local tostring = tostring
-local print = print
 
 local pb = require "pb"
 local wire_format = require "wire_format"
@@ -401,10 +399,10 @@ function StringEncoder(field_number, is_repeated, is_packed)
     assert(not is_packed)
     if is_repeated then
         return function (write, value)
-            for element in value do
+            for _, element in ipairs(value) do
 --                encoded = element.encode('utf-8')
                 write(tag)
-                EncodeVarint(write, #value)
+                EncodeVarint(write, #element)
                 write(element)
             end
         end
