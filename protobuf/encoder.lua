@@ -139,8 +139,8 @@ SFixed32Sizer = Fixed32Sizer
 FloatSizer = Fixed32Sizer
 
 Fixed64Sizer = _FixedSizer(8) 
-SFixed64Sizer = Fixed32Sizer
-DoubleSizer = Fixed32Sizer
+SFixed64Sizer = Fixed64Sizer
+DoubleSizer = Fixed64Sizer
 
 BoolSizer = _FixedSizer(1)
 
