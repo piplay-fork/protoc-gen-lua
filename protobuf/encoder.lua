@@ -116,7 +116,7 @@ function _FixedSizer(value_size)
                 return len(value) * element_size
             end
         else
-            field_size = value_size + tag_size
+            local field_size = value_size + tag_size
             return function (value)
                 return field_size
             end

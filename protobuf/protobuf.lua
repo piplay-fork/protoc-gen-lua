@@ -143,7 +143,7 @@ local _VALUE_CHECKERS = {
     [FieldDescriptor.CPPTYPE_UINT64] = type_checkers.Uint32ValueChecker(),
     [FieldDescriptor.CPPTYPE_DOUBLE] = type_checkers.TypeChecker({number = true}),
     [FieldDescriptor.CPPTYPE_FLOAT] = type_checkers.TypeChecker({number = true}),
-    [FieldDescriptor.CPPTYPE_BOOL] = type_checkers.TypeChecker({bool = true, int=true}),
+    [FieldDescriptor.CPPTYPE_BOOL] = type_checkers.TypeChecker({boolean = true, bool = true, int=true}),
     [FieldDescriptor.CPPTYPE_ENUM] = type_checkers.Int32ValueChecker(),
     [FieldDescriptor.CPPTYPE_STRING] = type_checkers.TypeChecker({string = true})
 }
@@ -349,7 +349,7 @@ local function _AddPropertiesForRepeatedField(field, message_meta)
     end
 
     message_meta._setter[property_name] = function(self)
-        error('Assignment not allowed to repeated field "' .. proto_field_name .. '" in protocol message object.')
+        error('Assignment not allowed to repeated field "' .. property_name .. '" in protocol message object.')
     end
 end
 
@@ -368,7 +368,7 @@ local function _AddPropertiesForNonRepeatedCompositeField(field, message_meta)
         return field_value
     end
     message_meta._setter[property_name] = function(self, new_value)
-        error('Assignment not allowed to composite field' .. proto_field_name .. 'in protocol message object.' )
+        error('Assignment not allowed to composite field' .. property_name .. 'in protocol message object.' )
     end
 end
 
