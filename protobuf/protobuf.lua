@@ -747,9 +747,9 @@ local function _AddIsInitializedMethod(message_descriptor, message_meta)
     message_meta._member.FindInitializationErrors = function(self)
         local errors = {}
 
-        for field in required_fields do
+        for _,field in ipairs(required_fields) do
             if not message_meta._member.HasField(self, field.name) then
-                errors.append(field.name)
+                errors.append(field.name) 
             end
         end
 
@@ -893,7 +893,7 @@ local function Message(descriptor)
     message_meta._member = {}
 --    message_meta._name = descriptor.full_name
 
-    ns = setmetatable({}, message_meta._member)
+    local ns = setmetatable({}, message_meta._member)
     message_meta._member.__call = _InitMethod(message_meta)
     message_meta._member.__index = message_meta._member 
     message_meta._member.type = ns

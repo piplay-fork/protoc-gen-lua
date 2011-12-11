@@ -173,7 +173,7 @@ function BytesSizer(field_number, is_repeated, is_packed)
     if is_repeated then
         return function (value)
             local result = tag_size * #value
-            for element in value do
+            for _,element in ipairs(value) do
                 local l = #element
                 result = result + VarintSize(l) + l
             end
@@ -194,7 +194,7 @@ function MessageSizer(field_number, is_repeated, is_packed)
     if is_repeated then
         return function(value)
             local result = tag_size * #value
-            for element in value do
+            for _,element in ipairs(value) do
                 local l = element:ByteSize()
                 result = result + VarintSize(l) + l
             end
