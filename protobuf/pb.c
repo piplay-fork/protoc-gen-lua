@@ -132,20 +132,22 @@ static int signed_varint_encoder(lua_State *L)
 
 static int pack_fixed32(lua_State *L, uint8_t* value){
 #ifdef IS_LITTLE_ENDIAN
-    lua_pushlstring(L, value, 4);
+    lua_pushlstring(L, (char*)value, 4);
 #else
     uint32_t v = htole32(*(uint32_t*)value);
     lua_pushlstring(L, (char*)&v, 4);
 #endif
+    return 0;
 }
 
 static int pack_fixed64(lua_State *L, uint8_t* value){
 #ifdef IS_LITTLE_ENDIAN
-    lua_pushlstring(L, value, 8);
+    lua_pushlstring(L, (char*)value, 8);
 #else
     uint64_t v = htole32(*(uint64_t*)value);
     lua_pushlstring(L, (char*)&v, 8);
 #endif
+    return 0;
 }
 
 static int struct_pack(lua_State *L)
@@ -214,7 +216,8 @@ static uint64_t unpack_varint(const char* buffer, size_t len)
 {
     uint64_t value = buffer[0] & 0x7f;
     size_t shift = 7;
-    for(size_t pos = 1; pos < len; ++pos)
+    size_t pos=0;
+    for(pos = 1; pos < len; ++pos)
     {
         value |= ((uint64_t)(buffer[pos] & 0x7f)) << shift;
         shift += 7;
@@ -329,7 +332,7 @@ static int struct_unpack(lua_State *L)
 {
     uint8_t format = luaL_checkinteger(L, 1);
     size_t len;
-    const char* buffer = luaL_checklstring(L, 2, &len);
+    const uint8_t* buffer = (uint8_t*)luaL_checklstring(L, 2, &len);
     size_t pos = luaL_checkinteger(L, 3);
 
     buffer += pos;
@@ -347,7 +350,7 @@ static int struct_unpack(lua_State *L)
             }
         case 'f':
             {
-                lua_pushnumber(L, *(lua_Number*)unpack_fixed32(buffer, out));
+                lua_pushnumber(L, (lua_Number)*(float*)unpack_fixed32(buffer, out));
                 break;
             }
         case 'd':
