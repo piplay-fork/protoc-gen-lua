@@ -25,7 +25,11 @@
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
-#include <endian.h>
+#ifdef __APPLE__
+  #include <machine/endian.h>
+#else
+  #include <endian.h>
+#endif/* __APPLE__ */
 
 #if __BYTE_ORDER == __LITTLE_ENDIAN
 #define IS_LITTLE_ENDIAN
