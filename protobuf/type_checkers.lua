@@ -20,7 +20,8 @@ local type = type
 local error = error
 local string = string
 
-module "type_checkers"
+module(...)
+
 function TypeChecker(acceptable_types)
     local acceptable_types = acceptable_types
 

@@ -14,6 +14,7 @@
 --  CREATED:  2010年08月05日 15时14分13秒 CST
 --------------------------------------------------------------------------------
 --
+local require = require
 local string = string
 local math = math
 local print = print
@@ -21,9 +22,9 @@ local getmetatable = getmetatable
 local table = table
 local ipairs = ipairs
 
-local descriptor = require "descriptor"
+module(...)
 
-module "text_format"
+local descriptor = require(_PACKAGE.."descriptor")
 
 function format(buffer)
     local len = string.len( buffer )	

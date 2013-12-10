@@ -15,14 +15,17 @@
 --  CREATED:  2010年07月29日 19时30分46秒 CST
 --------------------------------------------------------------------------------
 --
+local require = require
 local string = string
 local table = table
 local ipairs = ipairs
 local assert =assert
 
 local pb = require "pb"
-local wire_format = require "wire_format"
-module "encoder"
+
+module(...)
+
+local wire_format = require(_PACKAGE.."wire_format")
 
 function _VarintSize(value)
     if value <= 0x7f then return 1 end

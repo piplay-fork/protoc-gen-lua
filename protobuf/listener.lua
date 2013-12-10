@@ -17,7 +17,7 @@
 --
 local setmetatable = setmetatable
 
-module "listener"
+module(...)
 
 local _null_listener = {
     Modified = function()

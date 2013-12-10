@@ -16,6 +16,7 @@
 --------------------------------------------------------------------------------
 --
 
+local require = require
 local setmetatable = setmetatable
 local rawset = rawset
 local rawget = rawget
@@ -29,17 +30,18 @@ local tostring = tostring
 local type = type
 
 local pb = require "pb"
-local wire_format = require "wire_format"
-local type_checkers = require "type_checkers"
-local encoder = require "encoder"
-local decoder = require "decoder"
-local listener_mod = require "listener"
-local containers = require "containers"
-local descriptor = require "descriptor"
-local FieldDescriptor = descriptor.FieldDescriptor
-local text_format = require "text_format"
 
-module("protobuf")
+module(...)
+
+local wire_format = require(_NAME..".wire_format")
+local type_checkers = require(_NAME..".type_checkers")
+local encoder = require(_NAME..".encoder")
+local decoder = require(_NAME..".decoder")
+local listener_mod = require(_NAME..".listener")
+local containers = require(_NAME..".containers")
+local descriptor = require(_NAME..".descriptor")
+local FieldDescriptor = descriptor.FieldDescriptor
+local text_format = require(_NAME..".text_format")
 
 local function make_descriptor(name, descriptor, usable_key)
     local meta = {

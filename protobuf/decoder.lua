@@ -15,6 +15,7 @@
 --  CREATED:  2010年07月29日 19时30分51秒 CST
 --------------------------------------------------------------------------------
 --
+local require = require
 local string = string
 local table = table
 local assert = assert
@@ -23,9 +24,11 @@ local error = error
 local print = print
 
 local pb = require "pb"
-local encoder = require "encoder"
-local wire_format = require "wire_format"
-module "decoder"
+
+module(...)
+
+local encoder = require(_PACKAGE.."encoder")
+local wire_format = require(_PACKAGE.."wire_format")
 
 local _DecodeVarint = pb.varint_decoder
 local _DecodeSignedVarint = pb.signed_varint_decoder

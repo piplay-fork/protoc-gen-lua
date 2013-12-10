@@ -1,5 +1,5 @@
-package.path = package.path .. ';../protobuf/?.lua'
-package.cpath = package.cpath .. ';../protobuf/?.so'
+package.path = package.path .. ';../?.lua;../?/init.lua;;'
+package.cpath = package.cpath .. ';../?.so;;'
 
 require 'person_pb'
 
