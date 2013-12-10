@@ -248,9 +248,9 @@ DEFAULT_VALUE = {
 
 def code_gen_enum_item(index, enum_value, env):
     full_name = env.get_local_name() + '.' + enum_value.name
-    obj_name = full_name.upper().replace('.', '_') + '_ENUM'
+    obj_name = 'descriptors.' + full_name.upper().replace('.', '_') + '_ENUM'
     env.descriptor.append(
-        "local %s = protobuf.EnumValueDescriptor();\n"% obj_name
+        "%s = protobuf.EnumValueDescriptor();\n"% obj_name
     )
 
     context = Writer(obj_name)
@@ -264,9 +264,9 @@ def code_gen_enum_item(index, enum_value, env):
 def code_gen_enum(enum_desc, env):
     env.enter(enum_desc.name)
     full_name = env.get_local_name()
-    obj_name = full_name.upper().replace('.', '_')
+    obj_name = 'descriptors.' + full_name.upper().replace('.', '_')
     env.descriptor.append(
-        "local %s = protobuf.EnumDescriptor();\n"% obj_name
+        "%s = protobuf.EnumDescriptor();\n"% obj_name
     )
 
     context = Writer(obj_name)
@@ -284,9 +284,9 @@ def code_gen_enum(enum_desc, env):
 
 def code_gen_field(index, field_desc, env):
     full_name = env.get_local_name() + '.' + field_desc.name
-    obj_name = full_name.upper().replace('.', '_') + '_FIELD'
+    obj_name = 'descriptors.' + full_name.upper().replace('.', '_') + '_FIELD'
     env.descriptor.append(
-        "local %s = protobuf.FieldDescriptor();\n"% obj_name
+        "%s = protobuf.FieldDescriptor();\n"% obj_name
     )
 
     context = Writer(obj_name)
@@ -336,9 +336,9 @@ def code_gen_field(index, field_desc, env):
 def code_gen_message(message_descriptor, env, containing_type = None):
     env.enter(message_descriptor.name)
     full_name = env.get_local_name()
-    obj_name = full_name.upper().replace('.', '_')
+    obj_name = 'descriptors.' + full_name.upper().replace('.', '_')
     env.descriptor.append(
-        "local %s = protobuf.Descriptor();\n"% obj_name
+        "%s = protobuf.Descriptor();\n"% obj_name
     )
 
     context = Writer(obj_name)
@@ -409,12 +409,14 @@ def code_gen_file(proto_file, env, is_gen):
     if is_gen:
         lua = Writer()
         write_header(lua)
+        lua('local require = require\n')
         lua('local protobuf = require "protobuf"\n')
+        lua("module(...)\n")
         for i in includes:
-            lua('local %s_pb = require("%s_pb")\n' % (i, i))
-        lua("module('%s_pb')\n" % env.filename)
+            lua('local %s_pb = require(_PACKAGE.."%s_pb")\n' % (i, i))
 
         lua('\n\n')
+        lua('local descriptors = {}\n')
         map(lua, env.descriptor)
         lua('\n')
         map(lua, env.context)

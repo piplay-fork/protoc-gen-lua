@@ -1,3 +1,4 @@
 /pb.so
 /build
 /test/person_pb.lua
+/plugin/plugin_pb2.pyc
