@@ -345,7 +345,6 @@ local function _AddPropertiesForRepeatedField(field, message_meta)
         if field_value == nil then
             field_value = field._default_constructor(self)
             self._fields[field] = field_value
-            message_meta._member._Modified(field_value)
         end
         return field_value
     end

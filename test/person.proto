@@ -5,6 +5,11 @@ message Person {
   optional Test test = 4;
   optional Test2 test2 = 5;
 
+  message Test3 {
+    optional string field = 1;
+  }
+  repeated Test3 test3 = 6;
+
   extensions 10 to max;
 }
 
