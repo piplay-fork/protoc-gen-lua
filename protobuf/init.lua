@@ -571,7 +571,11 @@ end
 local function _AddStrMethod(message_meta)
     local format = text_format.msg_format
     message_meta.__tostring = function(self)
-        return format(self)    
+        return format(self)
+    end
+    local format_json = text_format.msg_format_json
+    message_meta.__tojson = function(self)
+        return format_json(self)
     end
 end
 
