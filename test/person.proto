@@ -1,14 +1,18 @@
-message Test {
-  optional string field = 1;
-}
-
 message Person {
   required int32 id = 1;
   required string name = 2;
   optional string email = 3;
   optional Test test = 4;
+  optional Test2 test2 = 5;
 
   extensions 10 to max;
+}
+
+message Test {
+  optional string field = 1;
+}
+
+message Test2 {
 }
 
 message Phone {

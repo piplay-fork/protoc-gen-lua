@@ -8,6 +8,7 @@ person.id = 1000
 person.name = "Alice"
 person.email = "Alice@example.com"
 person.test.field = 'hello'
+local t2 = person.test2
 
 local home = person.Extensions[person_pb.Phone.phones]:add()
 home.num = "2147483647"

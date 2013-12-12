@@ -344,8 +344,8 @@ local function _AddPropertiesForRepeatedField(field, message_meta)
         local field_value = self._fields[field]
         if field_value == nil then
             field_value = field._default_constructor(self)
-
             self._fields[field] = field_value
+            message_meta._member._Modified(field_value)
         end
         return field_value
     end
@@ -366,6 +366,7 @@ local function _AddPropertiesForNonRepeatedCompositeField(field, message_meta)
             field_value:_SetListener(self._listener_for_children)
             
             self._fields[field] = field_value
+            message_meta._member._Modified(field_value)
         end
         return field_value
     end
@@ -374,12 +375,12 @@ local function _AddPropertiesForNonRepeatedCompositeField(field, message_meta)
     end
 end
 
-local function _AddPropertiesForNonRepeatedScalarField(field, message)
+local function _AddPropertiesForNonRepeatedScalarField(field, message_meta)
     local property_name = field.name
     local type_checker = GetTypeChecker(field.cpp_type, field.type)
     local default_value = field.default_value
 
-    message._getter[property_name] = function(self)
+    message_meta._getter[property_name] = function(self)
         local value =  self._fields[field] 
         if value ~= nil then
             return self._fields[field]
@@ -388,11 +389,11 @@ local function _AddPropertiesForNonRepeatedScalarField(field, message)
         end
     end
 
-    message._setter[property_name] = function(self, new_value)
+    message_meta._setter[property_name] = function(self, new_value)
         type_checker(new_value)
         self._fields[field] = new_value
         if not self._cached_byte_size_dirty then
-            message._member._Modified(self)
+            message_meta._member._Modified(self)
         end
     end
 end
@@ -803,6 +804,7 @@ local function _AddMergeFromMethod(message_meta)
                 if field_value == nil then
                     field_value = field._default_constructor(self)
                     fields[field] = field_value
+                    message_meta._member._Modified(field_value)
                 end
                 field_value:MergeFrom(value)
             else
