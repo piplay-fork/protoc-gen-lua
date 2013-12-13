@@ -18,6 +18,7 @@
 
 local require = require
 local setmetatable = setmetatable
+local getmetatable = getmetatable
 local rawset = rawset
 local rawget = rawget
 local error = error
@@ -370,7 +371,12 @@ local function _AddPropertiesForNonRepeatedCompositeField(field, message_meta)
     return field_value
   end
   message_meta._setter[property_name] = function(self, new_value)
-    error('Assignment not allowed to composite field' .. property_name .. 'in protocol message object.' )
+    if getmetatable(new_value) ~= message_type._message_meta then
+      error('Assignment not allowed to set different type to composite field "' .. property_name .. '" in protocol message object.')
+    end
+    new_value:_SetListener(self._listener_for_children)
+    self._fields[field] = new_value
+    message_meta._member._Modified(new_value)
   end
 end
 
@@ -907,6 +913,7 @@ local function Message(descriptor)
 
   if rawget(descriptor, "_concrete_class") == nil then
     rawset(descriptor, "_concrete_class", ns)
+    rawset(descriptor, "_message_meta", message_meta)
     for k, field in ipairs(descriptor.fields) do  
       _AttachFieldHelpers(message_meta, field)
     end

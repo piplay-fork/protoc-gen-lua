@@ -16,6 +16,7 @@
 --------------------------------------------------------------------------------
 --
 local setmetatable = setmetatable
+local getmetatable = getmetatable
 local table = table
 local rawset = rawset
 local error = error
@@ -23,8 +24,11 @@ local error = error
 module(...)
 
 local _RCFC_meta = {
-  add = function(self)
-    local value = self._message_descriptor._concrete_class()
+  add = function(self, value)
+    value = value or self._message_descriptor._concrete_class()
+    if getmetatable(value) ~= self._message_descriptor._message_meta then
+      error("RepeatedCompositeFieldContainer Can't add different type")
+    end
     local listener = self._listener
     rawset(self, #self + 1, value)
     value:_SetListener(listener)
