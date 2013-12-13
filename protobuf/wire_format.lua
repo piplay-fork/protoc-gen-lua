@@ -30,20 +30,20 @@ _WIRETYPE_MAX = 5
 
 -- yeah, we don't need uint64
 local function _VarUInt64ByteSizeNoTag(uint64)
-    if uint64 <= 0x7f then return 1 end
-    if uint64 <= 0x3fff then return 2 end
-    if uint64 <= 0x1fffff then return 3 end
-    if uint64 <= 0xfffffff then return 4 end
-    return 5
+  if uint64 <= 0x7f then return 1 end
+  if uint64 <= 0x3fff then return 2 end
+  if uint64 <= 0x1fffff then return 3 end
+  if uint64 <= 0xfffffff then return 4 end
+  return 5
 end
 
 function PackTag(field_number, wire_type)
-    return field_number * 8 + wire_type
+  return field_number * 8 + wire_type
 end
 
 function UnpackTag(tag)
-    local wire_type = tag % 8
-    return (tag - wire_type) / 8, wire_type
+  local wire_type = tag % 8
+  return (tag - wire_type) / 8, wire_type
 end
 
 ZigZagEncode32 = pb.zig_zag_encode32
@@ -116,23 +116,23 @@ function StringByteSize(field_number, string)
 end
 
 function BytesByteSize(field_number, b)
-    return TagByteSize(field_number) + _VarUInt64ByteSizeNoTag(len(b)) + len(b)
+  return TagByteSize(field_number) + _VarUInt64ByteSizeNoTag(len(b)) + len(b)
 end
 
 function MessageByteSize(field_number, message)
-    return TagByteSize(field_number) + _VarUInt64ByteSizeNoTag(message.ByteSize()) + message.ByteSize()
+  return TagByteSize(field_number) + _VarUInt64ByteSizeNoTag(message.ByteSize()) + message.ByteSize()
 end
 
 function MessageSetItemByteSize(field_number, msg)
-    local total_size = 2 * TagByteSize(1) + TagByteSize(2) + TagByteSize(3) 
-    total_size = total_size + _VarUInt64ByteSizeNoTag(field_number)
-    local message_size = msg.ByteSize()
-    total_size = total_size + _VarUInt64ByteSizeNoTag(message_size)
-    total_size = total_size + message_size
-    return total_size
+  local total_size = 2 * TagByteSize(1) + TagByteSize(2) + TagByteSize(3) 
+  total_size = total_size + _VarUInt64ByteSizeNoTag(field_number)
+  local message_size = msg.ByteSize()
+  total_size = total_size + _VarUInt64ByteSizeNoTag(message_size)
+  total_size = total_size + message_size
+  return total_size
 end
 
 function TagByteSize(field_number)
-    return _VarUInt64ByteSizeNoTag(PackTag(field_number, 0))
+  return _VarUInt64ByteSizeNoTag(PackTag(field_number, 0))
 end
 

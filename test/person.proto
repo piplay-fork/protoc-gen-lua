@@ -21,11 +21,11 @@ message Test2 {
 }
 
 message Phone {
-    extend Person { repeated Phone phones = 10;}
-    enum PHONE_TYPE{
-        MOBILE = 1;
-        HOME = 2;
-    }
-    optional string num = 1;
-    optional PHONE_TYPE type = 2;
+  extend Person { repeated Phone phones = 10;}
+  enum PHONE_TYPE{
+    MOBILE = 1;
+    HOME = 2;
+  }
+  optional string num = 1;
+  optional PHONE_TYPE type = 2;
 }
