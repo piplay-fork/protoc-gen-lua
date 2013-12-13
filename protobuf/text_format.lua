@@ -15,6 +15,7 @@
 --------------------------------------------------------------------------------
 --
 
+local tostring = tostring
 local string = string
 local math = math
 local print = print
@@ -58,7 +59,7 @@ function msg_format_indent(write, msg, indent)
         write(string.rep(" ", indent))
         write("}\n")
       else
-        write(string.format("%s: %s\n", name, field_value))
+        write(string.format("%s: %s\n", name, tostring(field_value)))
       end
     end
     if field.label == FieldDescriptor.LABEL_REPEATED then
