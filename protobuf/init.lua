@@ -906,7 +906,9 @@ local function Message(descriptor)
   message_meta._member = {}
   --    message_meta._name = descriptor.full_name
 
-  local ns = setmetatable({}, message_meta._member)
+  local ns = setmetatable({
+    _descriptor = descriptor
+  }, message_meta._member)
   message_meta._member.__call = _InitMethod(message_meta)
   message_meta._member.__index = message_meta._member 
   message_meta._member.type = ns
