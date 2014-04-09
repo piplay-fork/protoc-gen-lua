@@ -24,7 +24,7 @@ local table = table
 local ipairs = ipairs
 local require = require
 local type = type
-local A = Array
+local Array = Array
 
 module(...)
 
@@ -93,7 +93,7 @@ function msg_format_json(msg)
       end
     end
     if field.label == FieldDescriptor.LABEL_REPEATED then
-      local arr = A and A{} or {}
+      local arr = Array and Array() or {}
       for _, k in ipairs(value) do
         arr:push(get(k))
       end
